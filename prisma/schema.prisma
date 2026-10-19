@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite" // switch to "postgresql" + a postgres DATABASE_URL for prod
+  url      = env("DATABASE_URL")
+}
+model User {
+  id           String      @id @default(cuid())
+  name         String      @unique
+  passwordHash String
+  role         String      @default("USER")
+  banned       Boolean     @default(false)
+  streak       Int         @default(0)
+  bestStreak   Int         @default(0)
+  createdAt    DateTime    @default(now())
+  sessions     Session[]
+  rounds       GameRound[]
+  scores       Score[]
+}
+model Session {
+  id      String   @id
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires DateTime
+}
+model Block {
+  id      String        @id
+  name    String
+  flip    Boolean       @default(false)
+  enabled Boolean       @default(true)
+  sheets  SpriteSheet[]
+  rounds  GameRound[]
+  scores  Score[]
+}
+model SpriteSheet {
+  id      String @id @default(cuid())
+  blockId String
+  block   Block  @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  idx     Int
+  file    String
+  frames  Int
+  size    Int
+  @@unique([blockId, idx])
+}
+model GameRound {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  blockId   String
+  block     Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  sheet     Int
+  frame     Int
+  flip      Boolean
+  guesses   Int      @default(0)
+  resolved  Boolean  @default(false)
+  correct   Boolean  @default(false)
+  points    Int      @default(0)
+  startedAt DateTime @default(now())
+  @@index([startedAt])
+}
+model Score {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blockId   String
+  block     Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  points    Int
+  createdAt DateTime @default(now())
+  @@index([blockId, points])
+  @@index([userId])
+}
