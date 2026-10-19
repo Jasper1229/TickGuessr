@@ -35,7 +35,10 @@ export async function POST(req: Request) {
     const m = await sharp(buf).metadata().catch(() => null);
     const size = Number(f.get("size")) || m?.width || 0;
     if (!m || m.format !== "png" || !size || m.width !== size || !m.height || m.height % size) return bad("Sheet must be a PNG: one column of square frames.");
-    const idx = block._count.sheets, name = `${blockId}_${idx}.png`, dir = path.join(process.cwd(), "assets", "sprites");
+    // keep the uploaded file name as-is (only stripped of any path/odd characters)
+    const idx = block._count.sheets, name = path.basename(file.name).replace(/[^\w.\-]/g, "_"), dir = path.join(process.cwd(), "assets", "sprites");
+    if (!/\.png$/i.test(name)) return bad("File name must end in .png");
+    if (await db.spriteSheet.findFirst({ where: { file: name } })) return bad(`A sheet named ${name} already exists.`);
     await mkdir(dir, { recursive: true });
     await writeFile(path.join(dir, name), buf);
     const frametime = Math.min(100, Math.max(1, Math.floor(Number(f.get("frametime"))) || 1));

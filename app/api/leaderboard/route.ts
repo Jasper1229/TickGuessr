@@ -15,7 +15,7 @@ export async function GET(req: Request) {
   const me = (await currentUser())?.name;
   const blocks = await db.block.findMany({ where: { enabled: true }, select: { id: true, name: true } });
   return NextResponse.json(
-    { blocks, rows: g.map((x) => { const name = names.get(x.userId) ?? "?"; return { name, score: x._sum.points ?? 0, me: name === me }; }) },
+    { blocks, entries: g.map((x, i) => { const username = names.get(x.userId) ?? "?"; return { rank: i + 1, username, score: x._sum.points ?? 0, me: username === me }; }) },
     { headers: { "Cache-Control": "no-store" } },
   );
 }
