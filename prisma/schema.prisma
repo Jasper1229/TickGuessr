@@ -41,6 +41,7 @@ model SpriteSheet {
   file    String
   frames  Int
   size    Int
+  frametime Int @default(1)
   @@unique([blockId, idx])
 }
 model GameRound {

@@ -64,6 +64,7 @@ export default function AdminPanel() {
               <input type="hidden" name="blockId" value={b.id} />
               <input name="file" type="file" accept="image/png" required className="text-xs text-slate-300 file:mr-2 file:rounded file:border-0 file:bg-[#212130] file:px-3 file:py-1.5 file:text-slate-200" />
               <input name="size" type="number" placeholder="frame px" defaultValue={16} className={`${inp} w-24`} aria-label="Frame size in pixels" />
+              <input name="frametime" type="number" min={1} defaultValue={1} placeholder="ticks/frame" aria-label="Ticks per frame" className={`${inp} w-28`} />
               <button className={btn}>Add sheet</button>
             </form>
           </div>

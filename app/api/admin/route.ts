@@ -38,7 +38,8 @@ export async function POST(req: Request) {
     const idx = block._count.sheets, name = `${blockId}_${idx}.png`, dir = path.join(process.cwd(), "assets", "sprites");
     await mkdir(dir, { recursive: true });
     await writeFile(path.join(dir, name), buf);
-    await db.spriteSheet.create({ data: { blockId, idx, file: name, frames: m.height / size, size } });
+    const frametime = Math.min(100, Math.max(1, Math.floor(Number(f.get("frametime"))) || 1));
+    await db.spriteSheet.create({ data: { blockId, idx, file: name, frames: m.height / size, size, frametime } });
     return ok();
   }
 

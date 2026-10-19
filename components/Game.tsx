@@ -65,7 +65,7 @@ export default function Game() {
       setTimeout(async () => apply(await next), d.correct ? 800 : 2000);
     } else {
       setStatus("wrong"); sfx("wrong");
-      setMsg(`Sheet ${d.sheetCorrect ? "correct" : "wrong"}, frame ${d.frameCorrect ? "correct" : "wrong"}`);
+      { const left = max - d.guessesUsed; setMsg(`Not quite. ${left} guess${left === 1 ? "" : "es"} left`); }
       setFrame(""); setBusy(false); input.current?.focus();
     }
   }

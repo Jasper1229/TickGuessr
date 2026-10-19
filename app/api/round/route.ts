@@ -15,12 +15,12 @@ export async function GET(req: Request) {
   const sheet = block.sheets[rand(block.sheets.length)];
   const me = await currentUser();
   const r = await db.gameRound.create({
-    data: { userId: me?.id, blockId: block.id, sheet: sheet.idx, frame: rand(sheet.frames), flip: block.flip && Math.random() < 0.5 },
+    data: { userId: me?.id, blockId: block.id, sheet: sheet.idx, frame: rand(sheet.frames) * sheet.frametime, flip: block.flip && Math.random() < 0.5 },
   });
   return NextResponse.json(
     {
       roundId: r.id, imageUrl: `/api/round/${r.id}/image`, blockId: block.id, blockName: block.name,
-      totalSheets: block.sheets.length, totalFrames: Math.max(...block.sheets.map((s) => s.frames)), maxGuesses: 3,
+      totalSheets: block.sheets.length,    totalFrames: Math.max(...block.sheets.map((s) => s.frames * s.frametime)), maxGuesses: 3,
     },
     { headers: { "Cache-Control": "no-store" } },
   );
